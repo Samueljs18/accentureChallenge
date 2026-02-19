@@ -1,0 +1,407 @@
+{
+	"info": {
+		"_postman_id": "4e794aac-e037-48bd-8c4b-2fe16b916fc4",
+		"name": "DemoQA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7088649"
+	},
+	"item": [
+		{
+			"name": "Cadastrar Usuário",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Validar se retorno tem status 201\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"//limpar username e USERID antes de setar novo dados\r",
+							"pm.environment.unset(\"username\");\r",
+							"pm.environment.unset(\"userID\");\r",
+							"\r",
+							"//Registrar valores de Username e UserID retornado no response em váriaveis de ambiente\r",
+							"pm.environment.set(\"username\", response.username);\r",
+							"pm.environment.set(\"userID\", response.userID);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{$randomUserName}}\",\r\n  \"password\": \"Quality#12\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/User",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Autorizar Usuário",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Validar se retorno tem status 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"//limpar token antes de setar\r",
+							"pm.environment.unset(\"token\");\r",
+							"\r",
+							"//atribuir o valor token retornando no response a váriavel  de ambiente token \r",
+							"pm.environment.set(\"token\", response.token)\r",
+							"\r",
+							"//Validar se body contém valor \"result\": \"User authorized successfully.\"\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User authorized successfully\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{username}}\",\r\n  \"password\": \"Quality#12\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/GenerateToken",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"GenerateToken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirmar Autenticação do Usuário",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Validar se retorno tem status 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Validar se body contém valor \"result\": \"User authorized successfully.\"\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"true\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{username}}\",\r\n  \"password\": \"Quality#12\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/Authorized",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"Authorized"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Livros Disponíveis",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Validar se retorno tem status 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Validar se Response é do tipo JSON\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"//Validar estrutura de retorno do JSON\r",
+							"const schema = {\r",
+							"    type: \"object\",\r",
+							"    required: [\"books\"],\r",
+							"    properties: {\r",
+							"        books: {\r",
+							"            type: \"array\",\r",
+							"            minItems: 1,\r",
+							"            items: {\r",
+							"                type: \"object\",\r",
+							"                required: [\r",
+							"                    \"isbn\",\r",
+							"                    \"title\",\r",
+							"                    \"subTitle\",\r",
+							"                    \"author\",\r",
+							"                    \"publish_date\",\r",
+							"                    \"publisher\",\r",
+							"                    \"pages\",\r",
+							"                    \"description\",\r",
+							"                    \"website\"\r",
+							"                ],\r",
+							"                properties: {\r",
+							"                    isbn: { type: \"string\" },\r",
+							"                    title: { type: \"string\" },\r",
+							"                    subTitle: { type: \"string\" },\r",
+							"                    author: { type: \"string\" },\r",
+							"                    publish_date: { type: \"string\" },\r",
+							"                    publisher: { type: \"string\" },\r",
+							"                    pages: { type: \"number\" },\r",
+							"                    description: { type: \"string\" },\r",
+							"                    website: { type: \"string\" }\r",
+							"                }\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Books schema is valid\", function () {\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"//limpar bookOne e bookTwo antes de setar novo dados\r",
+							"pm.environment.unset(\"bookOne\");\r",
+							"pm.environment.unset(\"bookTwo\");\r",
+							"\r",
+							"//Pegar primeiro e segundo livro\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"bookOne\", response.books[0].isbn);\r",
+							"pm.environment.set(\"bookTwo\", response.books[1].isbn);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/BookStore/v1/Books",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alugar 2 Livros",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Validar se retorno tem status 201\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"{{userID}}\",\r\n    \"collectionOfIsbns\": [\r\n        {\r\n            \"isbn\": \"{{bookOne}}\"\r\n        },\r\n        {\r\n            \"isbn\": \"{{bookTwo}}\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/BookStore/v1/Books",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Detalhes Usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"//Validar se userID está correto\r",
+							"pm.test(\"UserId is correct\", function () {\r",
+							"    pm.expect(response.userId)\r",
+							"        .to.eql(pm.environment.get(\"userID\"));\r",
+							"});\r",
+							"\r",
+							"//Validar se Username está correto\r",
+							"pm.test(\"Username is correct\", function () {\r",
+							"    pm.expect(response.username)\r",
+							"        .to.eql(pm.environment.get(\"username\"));\r",
+							"});\r",
+							"\r",
+							"//Validar se ISBN do primeiro livro está correto\r",
+							"pm.test(\"First book isbn is correct\", function () {\r",
+							"    pm.expect(response.books[0].isbn)\r",
+							"        .to.eql(pm.environment.get(\"bookOne\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Second book isbn is correct\", function () {\r",
+							"    pm.expect(response.books[1].isbn)\r",
+							"        .to.eql(pm.environment.get(\"bookTwo\"));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/User/{{userID}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User",
+						"{{userID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
