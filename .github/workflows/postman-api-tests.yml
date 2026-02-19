@@ -23,6 +23,6 @@ jobs:
 
       - name: Run API tests
         run: |
-          postman collection run "SEU_COLLECTION_ID" \
-          -e "SEU_ENVIRONMENT_ID" \
+          postman collection run "7088649-4e794aac-e037-48bd-8c4b-2fe16b916fc4" \
+          -e "7088649-729cab05-244d-41bd-9a98-994a15062df1" \
           --reporters cli
