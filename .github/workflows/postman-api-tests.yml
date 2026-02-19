@@ -1,4 +1,4 @@
-name: Automated API tests with Newman
+name: Testes API DemoQA
 
 on:
   push:
