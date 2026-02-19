@@ -1,5 +1,4 @@
-
-name: Automated API tests using Postman CLI
+name: Automated API tests with Newman
 
 on:
   push:
@@ -13,16 +12,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Postman CLI
-        run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-          echo "$HOME/.postman/bin" >> $GITHUB_PATH
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-      - name: Login to Postman CLI
-        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-
-      - name: Run API tests
+      - name: Install Newman and Reporter
         run: |
-          postman collection run "7088649-4e794aac-e037-48bd-8c4b-2fe16b916fc4" \
-          -e "7088649-729cab05-244d-41bd-9a98-994a15062df1" \
-          --reporters cli
+          npm install -g newman newman-reporter-htmlextra
+
+      - name: Run API tests with Newman
+        run: |
+          mkdir reports
+          newman run postman/collection.json \
+          -e postman/environment.json \
+          -r cli,htmlextra,json \
+          --reporter-htmlextra-export reports/report.html \
+          --reporter-json-export reports/report.json
+
+      - name: Upload Test Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-test-report
+          path: reports/
